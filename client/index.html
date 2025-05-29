@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upcoming Premier League Matches</title>
+  <style>
+    body {
+      background-color: #f9f9f9;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    #match-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .match {
+      padding: 1rem;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .match:last-child {
+      border-bottom: none;
+    }
+
+    .match strong {
+      color: #2980b9;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .logo {
+  display: block;
+  margin: 0 auto 1rem auto;
+  max-width: 120px;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg" alt="Premier League Logo" class="logo" />
+    <h1>🏆  upcoming 2021 Matches</h1>
+    <ul id="match-list"></ul>
+    <p id="error" class="error" style="display: none;">Failed to load matches.</p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        fetch("http://localhost:5000/api/matches")
+
+        .then((response) => response.json())
+        .then((matches) => {
+          const list = document.getElementById("match-list");
+
+          if (!matches || matches.length === 0) {
+            document.getElementById("error").style.display = "block";
+            return;
+          }
+
+          matches.forEach((match) => {
+            const listItem = document.createElement("li");
+            listItem.classList.add("match");
+            const date = new Date(match.dateTime);
+            listItem.innerHTML = `
+              <strong>${match.homeTeam}</strong> vs <strong>${match.awayTeam}</strong><br/>
+              <span>${date.toLocaleString()}</span>
+            `;
+            list.appendChild(listItem);
+          });
+        })
+        .catch((err) => {
+          console.error("Fetch error:", err);
+          document.getElementById("error").style.display = "block";
+        });
+    });
+  </script>
+</body>
+</html>
